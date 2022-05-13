@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_error_title">30sp</dimen>
+    <dimen name="text_size_error_desc">20sp</dimen>
+    <dimen name="button_width_error_retry">200dp</dimen>
+    <dimen name="button_padding_error_retry">20dp</dimen>
+    <dimen name="button_margin_error_retry">20dp</dimen>
+</resources>

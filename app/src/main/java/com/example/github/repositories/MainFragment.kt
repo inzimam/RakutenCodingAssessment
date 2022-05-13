@@ -53,6 +53,8 @@ class MainFragment : Fragment() {
                 }
                 is NetworkResult.Error -> {
                     progressBar!!.hide()
+                    popCurrentFragment()
+                    showErrorFragment()
                 }
                 is NetworkResult.Loading -> {
                     progressBar!!.show()
@@ -60,5 +62,15 @@ class MainFragment : Fragment() {
             }
         }
         return view
+    }
+
+    private fun popCurrentFragment() {
+        requireActivity().supportFragmentManager.popBackStack()
+    }
+
+    private fun showErrorFragment() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .add(android.R.id.content, ErrorFragment())
+            .commit()
     }
 }
