@@ -6,6 +6,7 @@ import com.example.github.repositories.data.GITHUB_URL
 import com.example.github.repositories.data.GitHubEndpoints
 import com.example.github.repositories.data.RepositoryDTO
 import com.example.github.repositories.data.UserDTO
+import com.example.github.repositories.utils.NetworkResult
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,23 +19,33 @@ class UserViewModel : ViewModel() {
         .build()
     private val service: GitHubEndpoints = retrofit.create(GitHubEndpoints::class.java)
 
-    val user = MutableLiveData<UserDTO>()
-    val repositories = MutableLiveData<List<RepositoryDTO>>()
+    val user = MutableLiveData<NetworkResult<UserDTO>>()
+    val repositories = MutableLiveData<NetworkResult<List<RepositoryDTO>>>()
 
     fun fetchUser(username: String) {
         // FIXME Use the proper scope
-        GlobalScope.launch(Dispatchers.IO) {
+
+        GlobalScope.launch(Dispatchers.Main) {
+            repositories.value = NetworkResult.Loading()
             delay(1_000) // This is to simulate network latency, please don't remove!
-            val response = service.getUser(username).execute()
-            user.postValue(response.body()!!)
+            var response: UserDTO?
+            withContext(Dispatchers.IO) {
+                response = service.getUser(username).execute().body()
+            }
+            user.value = NetworkResult.Success(response!!)
         }
     }
 
     fun fetchRepositories(reposUrl: String) {
-        GlobalScope.launch(Dispatchers.IO) {
+
+        GlobalScope.launch(Dispatchers.Main) {
+            repositories.value = NetworkResult.Loading()
             delay(1_000) // This is to simulate network latency, please don't remove!
-            val response = service.getUserRepositories(reposUrl).execute()
-            repositories.postValue(response.body()!!)
+            var response: List<RepositoryDTO>?
+            withContext(Dispatchers.IO) {
+                response = service.getUserRepositories(reposUrl).execute().body()
+            }
+            repositories.value = NetworkResult.Success(response!!)
         }
     }
 }

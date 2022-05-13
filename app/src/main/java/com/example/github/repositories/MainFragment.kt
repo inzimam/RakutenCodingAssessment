@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.github.repositories.utils.NetworkResult
+import com.example.github.repositories.utils.hide
+import com.example.github.repositories.utils.show
 
 class MainFragment : Fragment() {
 
@@ -40,7 +42,7 @@ class MainFragment : Fragment() {
 
             when (networkResult) {
                 is NetworkResult.Success -> {
-                    progressBar!!.visibility = View.GONE
+                    progressBar!!.hide()
                     networkResult.data?.let {
                         val adapter = RepositoryAdapter(
                             networkResult.data.take(20).toMutableList(),
@@ -50,10 +52,10 @@ class MainFragment : Fragment() {
                     }
                 }
                 is NetworkResult.Error -> {
-                    progressBar!!.visibility = View.GONE
+                    progressBar!!.hide()
                 }
                 is NetworkResult.Loading -> {
-                    progressBar!!.visibility = View.VISIBLE
+                    progressBar!!.show()
                 }
             }
         }

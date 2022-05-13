@@ -6,11 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.github.repositories.data.OwnerDTO
+import com.example.github.repositories.utils.NetworkResult
+import com.example.github.repositories.utils.hide
+import com.example.github.repositories.utils.show
 import com.squareup.picasso.Picasso
 
 class UserFragment(private val user: OwnerDTO) : Fragment() {
@@ -22,6 +26,7 @@ class UserFragment(private val user: OwnerDTO) : Fragment() {
     private var detail: TextView? = null
     private var url: TextView? = null
     private var list: RecyclerView? = null
+    private var progressBar: ProgressBar? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -30,6 +35,7 @@ class UserFragment(private val user: OwnerDTO) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_user, container, false)
+        progressBar = view.findViewById(R.id.progress_bar)
         title = view.findViewById(R.id.title)
         image = view.findViewById(R.id.image)
         detail = view.findViewById(R.id.detail)
@@ -40,12 +46,33 @@ class UserFragment(private val user: OwnerDTO) : Fragment() {
         Picasso.get().load(user.avatar_url.toUri()).into(image)
 
         viewModel.fetchUser(user.login)
-        viewModel.user.observeForever {
-            detail!!.text = "Twitter handle: " + it.twitter_username
-            viewModel.fetchRepositories(it.repos_url!!)
+        viewModel.user.observeForever { networkResult ->
+            when (networkResult) {
+                is NetworkResult.Success -> {
+                    detail!!.text = "Twitter handle: " + networkResult.data!!.twitter_username
+                    viewModel.fetchRepositories(networkResult.data.repos_url!!)
+                }
+                is NetworkResult.Error -> {
+                    progressBar!!.hide()
+                }
+                is NetworkResult.Loading -> {
+                    progressBar!!.show()
+                }
+            }
         }
         viewModel.repositories.observeForever {
-            list!!.adapter = RepositoryAdapter(it.toMutableList(), requireActivity())
+            when (it) {
+                is NetworkResult.Success -> {
+                    progressBar!!.hide()
+                    list!!.adapter = RepositoryAdapter(it.data!!.toMutableList(), requireActivity())
+                }
+                is NetworkResult.Error -> {
+                    progressBar!!.hide()
+                }
+                is NetworkResult.Loading -> {
+                    progressBar!!.show()
+                }
+            }
         }
         return view
     }
