@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.github.repositories.data.OwnerDTO
 import com.example.github.repositories.utils.NetworkResult
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso
 
 class UserFragment(private val user: OwnerDTO) : Fragment() {
 
-    private val viewModel = UserViewModel()
+    private lateinit var viewModel: UserViewModel
 
     private var title: TextView? = null
     private var image: ImageView? = null
@@ -35,6 +36,7 @@ class UserFragment(private val user: OwnerDTO) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_user, container, false)
+        setupViewModel()
         progressBar = view.findViewById(R.id.progress_bar)
         title = view.findViewById(R.id.title)
         image = view.findViewById(R.id.image)
@@ -75,5 +77,11 @@ class UserFragment(private val user: OwnerDTO) : Fragment() {
             }
         }
         return view
+    }
+
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(
+            this
+        )[UserViewModel::class.java]
     }
 }

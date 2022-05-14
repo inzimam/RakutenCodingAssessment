@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,8 +20,7 @@ import com.example.github.repositories.utils.show
 
 class MainFragment : Fragment() {
 
-    private val viewModel = MainViewModel()
-
+    private lateinit var viewModel: MainViewModel
     private var swipeRefresh: SwipeRefreshLayout? = null
     private var recyclerview: RecyclerView? = null
     private var progressBar: ProgressBar? = null
@@ -32,6 +33,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
+        setupViewModel()
         viewModel.fetchItems()
 
         progressBar = view.findViewById(R.id.progress_bar)
@@ -87,5 +89,11 @@ class MainFragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .add(android.R.id.content, ErrorFragment())
             .commit()
+    }
+
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(
+            this
+        )[MainViewModel::class.java]
     }
 }

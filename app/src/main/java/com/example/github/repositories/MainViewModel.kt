@@ -2,6 +2,7 @@ package com.example.github.repositories
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.github.repositories.data.*
 import com.example.github.repositories.utils.NetworkResult
 import kotlinx.coroutines.*
@@ -19,7 +20,7 @@ class MainViewModel : ViewModel() {
     val repositories = MutableLiveData<NetworkResult<List<RepositoryDTO>>>()
 
     fun fetchItems() {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             repositories.value = NetworkResult.Loading()
             delay(1_000) // This is to simulate network latency, please don't remove!
             var response: Response?
@@ -31,7 +32,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun refresh() {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             delay(1_000) // This is to simulate network latency, please don't remove!
             var response: Response?
             withContext(Dispatchers.IO) {
