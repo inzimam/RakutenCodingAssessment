@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.github.repositories.data.LocalDataStore
+import com.example.github.repositories.data.POSITION
+import com.example.github.repositories.data.REQUEST_KEY
 import com.example.github.repositories.data.RepositoryDTO
 import com.squareup.picasso.Picasso
 
-class DetailFragment(private val repository: RepositoryDTO) : Fragment() {
+class DetailFragment(private val repository: RepositoryDTO, private val pos: Int) : Fragment() {
 
     private var title: TextView? = null
     private var image: ImageView? = null
@@ -49,6 +52,11 @@ class DetailFragment(private val repository: RepositoryDTO) : Fragment() {
             val isBookmarked = LocalDataStore.instance.getBookmarks().contains(repository)
             LocalDataStore.instance.bookmarkRepo(repository, !isBookmarked)
             image!!.setImageResource(if (!isBookmarked) R.drawable.baseline_bookmark_black_24 else R.drawable.baseline_bookmark_border_black_24)
+            // It will pass position to previous fragment so that adapter can be updated for bookmark
+            requireActivity().supportFragmentManager.setFragmentResult(
+                REQUEST_KEY,
+                bundleOf(POSITION to pos)
+            )
         }
         detail!!.setOnClickListener {
             requireActivity().supportFragmentManager

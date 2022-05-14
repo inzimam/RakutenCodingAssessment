@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.github.repositories.data.POSITION
+import com.example.github.repositories.data.REQUEST_KEY
 import com.example.github.repositories.utils.NetworkResult
 import com.example.github.repositories.utils.hide
 import com.example.github.repositories.utils.show
@@ -21,6 +23,7 @@ class MainFragment : Fragment() {
     private var swipeRefresh: SwipeRefreshLayout? = null
     private var recyclerview: RecyclerView? = null
     private var progressBar: ProgressBar? = null
+    private var adapter: RepositoryAdapter? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -44,7 +47,7 @@ class MainFragment : Fragment() {
                 is NetworkResult.Success -> {
                     progressBar!!.hide()
                     networkResult.data?.let {
-                        val adapter = RepositoryAdapter(
+                        adapter = RepositoryAdapter(
                             networkResult.data.take(20).toMutableList(),
                             requireActivity()
                         )
@@ -62,6 +65,18 @@ class MainFragment : Fragment() {
             }
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // it will update the adapter for particular position which is bookmarked by user at detail page
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val position = bundle.getInt(POSITION)
+            adapter?.notifyItemChanged(position)
+        }
     }
 
     private fun popCurrentFragment() {

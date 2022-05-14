@@ -50,7 +50,7 @@ class RepositoryAdapter(
             container.setOnClickListener {
                 activity.supportFragmentManager
                     .beginTransaction()
-                    .add(android.R.id.content, DetailFragment(item))
+                    .add(android.R.id.content, DetailFragment(item, adapterPosition))
                     .addToBackStack("detail")
                     .commit()
             }
