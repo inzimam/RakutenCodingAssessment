@@ -8,7 +8,10 @@ import com.example.github.repositories.data.GitHubEndpoints
 import com.example.github.repositories.data.RepositoryDTO
 import com.example.github.repositories.data.UserDTO
 import com.example.github.repositories.utils.NetworkResult
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -33,7 +36,9 @@ class UserViewModel : ViewModel() {
             withContext(Dispatchers.IO) {
                 response = service.getUser(username).execute().body()
             }
-            user.value = NetworkResult.Success(response!!)
+            if (response != null)
+                user.value = NetworkResult.Success(response!!)
+            else user.value = NetworkResult.Error("Something went wrong")
         }
     }
 

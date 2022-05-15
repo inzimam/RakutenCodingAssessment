@@ -59,9 +59,16 @@ class DetailFragment(private val repository: RepositoryDTO, private val pos: Int
             )
         }
         detail!!.setOnClickListener {
-            requireActivity().supportFragmentManager
+            val fragment = requireActivity().supportFragmentManager.findFragmentByTag("user")
+            if (fragment == null)
+                requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .add(android.R.id.content, UserFragment(repository.owner!!),"user")
+                    .addToBackStack("user")
+                    .commit()
+            else requireActivity().supportFragmentManager
                 .beginTransaction()
-                .add(android.R.id.content, UserFragment(repository.owner!!))
+                .replace(android.R.id.content, fragment,"user")
                 .addToBackStack("user")
                 .commit()
         }

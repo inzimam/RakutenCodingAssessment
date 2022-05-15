@@ -53,9 +53,16 @@ class RepositoryAdapter(
                     R.drawable.baseline_bookmark_border_black_24
             )
             container.setOnClickListener {
-                activity.supportFragmentManager
+                val fragment = activity.supportFragmentManager.findFragmentByTag("detail")
+                if (fragment == null)
+                    activity.supportFragmentManager
+                        .beginTransaction()
+                        .add(android.R.id.content, DetailFragment(item, adapterPosition), "detail")
+                        .addToBackStack("detail")
+                        .commit()
+                else activity.supportFragmentManager
                     .beginTransaction()
-                    .add(android.R.id.content, DetailFragment(item, adapterPosition))
+                    .replace(android.R.id.content, fragment, "detail")
                     .addToBackStack("detail")
                     .commit()
             }
