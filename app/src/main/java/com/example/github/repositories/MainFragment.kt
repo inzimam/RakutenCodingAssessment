@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +43,7 @@ class MainFragment : Fragment() {
         recyclerview!!.layoutManager = LinearLayoutManager(context)
 
         viewModel.repositories.observeForever { networkResult ->
-
+            swipeRefresh?.isRefreshing = false
             when (networkResult) {
                 is NetworkResult.Success -> {
                     progressBar!!.hide()

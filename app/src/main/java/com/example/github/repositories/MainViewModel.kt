@@ -20,6 +20,7 @@ class MainViewModel : ViewModel() {
     val repositories = MutableLiveData<NetworkResult<List<RepositoryDTO>>>()
 
     fun fetchItems() {
+        EspressoIdlingResource.increment()
         viewModelScope.launch(Dispatchers.Main) {
             repositories.value = NetworkResult.Loading()
             delay(1_000) // This is to simulate network latency, please don't remove!
@@ -28,6 +29,7 @@ class MainViewModel : ViewModel() {
                 response = service.searchRepositories(QUERY, SORT, ORDER).execute().body()
             }
             repositories.value = NetworkResult.Success(response?.items!!)
+            EspressoIdlingResource.decrement()
         }
     }
 
